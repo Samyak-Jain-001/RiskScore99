@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: riskscore99-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - RISKSCORE99_MODEL_TYPE=logreg
+      - RISKSCORE99_THRESHOLD_T1=0.2
+      - RISKSCORE99_THRESHOLD_T2=0.5
+      - RISKSCORE99_THRESHOLD_T3=0.8
+    volumes:
+      - ./data:/app/data
+

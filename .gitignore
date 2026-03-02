@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.log
+.Python
+env/
+venv/
+.venv/
+env.bak/
+
+# VS Code / IDE
+.vscode/
+.idea/
+*.iml
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data – DO NOT COMMIT IEEE-CIS DATA
+data/external/
+data/processed/
+data/artifacts/
+
+# SQLite DB files
+backend/app/*.db
+backend/app/db/*.db
+*.sqlite3
+
+# Docker
+*.pid
+
