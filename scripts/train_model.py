@@ -10,6 +10,7 @@ Train baseline IEEE-CIS fraud model for RiskScore99.
 from __future__ import annotations
 
 import json
+import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -23,6 +24,14 @@ from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+BACKEND_ROOT = PROJECT_ROOT / "backend"
+for path in (BACKEND_ROOT, PROJECT_ROOT):
+    path_str = str(path)
+    if path.exists() and path_str not in sys.path:
+        sys.path.insert(0, path_str)
 
 from app.config import settings
 from app.db.base import Base
@@ -32,7 +41,6 @@ from app.services.feature_engineering import build_feature_matrix
 from app.services.metrics_service import compute_core_metrics, threshold_sweep
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_PROCESSED = PROJECT_ROOT / "data" / "processed"
 ARTIFACTS_ROOT = PROJECT_ROOT / "data" / "artifacts"
 
@@ -79,16 +87,17 @@ def main() -> None:
         numeric_transformer = Pipeline(
             steps=[
                 ("imputer", SimpleImputer(strategy="median")),
+                ("scaler", StandardScaler()),              # ← ADD THIS LINE
             ]
         )
 
         categorical_transformer = Pipeline(
             steps=[
                 ("imputer", SimpleImputer(strategy="most_frequent")),
-                ("onehot", OneHotEncoder(handle_unknown="ignore")),
+                ("onehot", OneHotEncoder(handle_unknown="ignore", sparse_output=False)),  # ← add sparse_output=False
             ]
         )
-
+        
         preprocessor = ColumnTransformer(
             transformers=[
                 ("num", numeric_transformer, numeric_features),
@@ -109,7 +118,7 @@ def main() -> None:
             )
         else:
             base_estimator = LogisticRegression(
-                max_iter=1000,
+                max_iter=2000,
                 class_weight="balanced",
                 n_jobs=-1,
             )

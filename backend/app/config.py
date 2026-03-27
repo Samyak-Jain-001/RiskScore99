@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     sqlite_path: Path = PROJECT_ROOT / "backend" / "app" / "riskscore99.db"
 
     # Model + thresholds
-    model_type: Literal["logreg", "hgb", "lightgbm"] = "logreg"
+    model_type: Literal["logreg", "hgb", "lightgbm"] = "hgb"
     threshold_t1: float = 0.20
     threshold_t2: float = 0.50
     threshold_t3: float = 0.80
@@ -31,6 +31,23 @@ class Settings(BaseSettings):
     # Optional: fixed model version to load; if None, load latest from registry
     fixed_model_version: Optional[str] = None
 
+    # ── NEW: Agentic behavior settings ──────────────────────────────
+    # Ambiguous score band — triggers re-evaluation loop
+    ambiguous_score_low: int = 35
+    ambiguous_score_high: int = 65
+
+    # Enable the agentic re-evaluation loop (set False for deterministic-only mode)
+    enable_adaptive_loop: bool = True
+
+    # Enhanced explanation for high-risk decisions (BLOCK / REVIEW)
+    enable_enhanced_explanations: bool = True
+
+    # ── NEW: Drift / feedback thresholds ────────────────────────────
+    drift_alert_threshold: int = 500       # outcomes before first drift check
+    drift_retrain_threshold: int = 2000    # outcomes before retrain recommendation
+
+    # ── NEW: Cost model – real avg transaction amount (updated by training) ─
+    avg_transaction_amt: float = 150.0     # default; overwritten during training
+
 
 settings = Settings()
-

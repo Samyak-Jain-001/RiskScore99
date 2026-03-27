@@ -17,6 +17,8 @@ def create_scored_transaction(
     decision: str,
     reason_codes: List[str],
     model_version: str | None,
+    latency_ms=None,
+    scoring_passes=1,
 ) -> TransactionScored:
     tx = TransactionScored(
         transaction_id=raw_json.get("TransactionID"),
@@ -27,6 +29,8 @@ def create_scored_transaction(
         decision=decision,
         reason_codes_json=reason_codes,
         model_version=model_version,
+        latency_ms=latency_ms,
+        scoring_passes=scoring_passes,
     )
     db.add(tx)
     db.commit()
@@ -65,10 +69,12 @@ def get_transaction(db: Session, tx_id: int) -> Optional[TransactionScored]:
 
 
 def update_reviewer_action(
-    db: Session, tx: TransactionScored, action: str, notes: Optional[str]
+    db: Session, tx: TransactionScored, action: str, notes: Optional[str], reviewer_id: Optional[str]
 ) -> TransactionScored:
     tx.reviewer_action = action
     tx.reviewer_notes = notes
+    if reviewer_id:
+        tx.reviewer_id = reviewer_id
     db.add(tx)
     db.commit()
     db.refresh(tx)

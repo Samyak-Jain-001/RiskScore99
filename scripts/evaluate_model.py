@@ -8,6 +8,7 @@ Evaluate the latest trained RiskScore99 model.
 
 from __future__ import annotations
 
+import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -17,6 +18,13 @@ import numpy as np
 import pandas as pd
 from sklearn import metrics
 
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+BACKEND_ROOT = PROJECT_ROOT / "backend"
+for path in (BACKEND_ROOT, PROJECT_ROOT):
+    path_str = str(path)
+    if path.exists() and path_str not in sys.path:
+        sys.path.insert(0, path_str)
+
 from app.db.base import Base
 from app.db.models import ModelRegistry
 from app.db.session import SessionLocal, engine
@@ -24,7 +32,6 @@ from app.services.feature_engineering import build_feature_matrix
 from app.services.metrics_service import compute_core_metrics, threshold_sweep
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_PROCESSED = PROJECT_ROOT / "data" / "processed"
 DOCS_DIR = PROJECT_ROOT / "docs"
 

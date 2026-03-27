@@ -32,6 +32,8 @@ class ScoreResponse(BaseModel):
     reason_codes: List[str]
     explanation_text: str
     model_version: Optional[str]
+    scoring_passes: Optional[int] = 1
+    latency_ms: Optional[float] = None
 
 
 class ImportCsvRequest(BaseModel):
@@ -66,6 +68,8 @@ class TransactionDetail(TransactionSummary):
 class ReviewActionRequest(BaseModel):
     action: Literal["approve", "block", "challenge", "review"]
     notes: Optional[str] = None
+    reviewer_id: Optional[str] = None
+
 
 
 class OutcomeRequest(BaseModel):
